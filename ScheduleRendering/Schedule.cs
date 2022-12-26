@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ScheduleRendering {
-static class ParseInput {
+static class ScheduleExt {
 
+public static string[] dayNames = new string[]{ "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье" };
 public static string minuteOfDayToString(int mod) {
     return (mod/60).ToString() + ":" + (mod%60).ToString("00");
+}
+
+public static int timeToMinuteOfDay(int hour, int minute) {
+    return hour * 60 + minute;
 }
 
 static int toInt(this bool it) {
@@ -514,5 +518,4 @@ public static Schedule parseSchedule(string input_) {
     else throw new Exception($"unknown version=${version}");
 }
 
-}
 }
