@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace ScheduleRendering {
 static class ParseInput {
 
-static string minuteOfDayToString(int mod) {
+public static string minuteOfDayToString(int mod) {
     return (mod/60).ToString() + ":" + (mod%60).ToString("00");
 }
 
@@ -14,8 +15,33 @@ static int toInt(this bool it) {
 	return it ? 1 : 0;
 }
 
-static string Substring2(this string it, int start, int endExc) {
+public static IntRange calculateNozeropaddingRange(this int[] it) {
+    var first = it.Length;
+    var last = -1;
+
+    for(int i = 0; i < it.Length; i++) {
+        if(it[i] != 0) {
+            first = Math.Min(first, i);
+            last  = Math.Max(last, i);
+        }
+    }
+    return new IntRange(first, last);
+}
+
+public static string Substring2(this string it, int start, int endExc) {
 	return it.Substring(start, endExc - start);
+}
+
+public static int min2(int f, params int[] os) {
+	var it = f;
+	foreach(var o in os) it = Math.Min(it, o);
+	return it;
+}
+
+public static int max2(int f, params int[] os) {
+	var it = f;
+	foreach(var o in os) it = Math.Max(it, o);
+	return it;
 }
 
 public class Lesson{
@@ -42,7 +68,48 @@ public class IntRange {
 		int first, int last
 	) {
 		this.first = first;
-		this.last =- last;
+		this.last = last;
+	}
+
+	public int Size { get { return last + 1 - first; } }
+
+	public IEnumerator<int> GetEnumerator() {
+		return new RangeEnumerator(first, last);
+	}
+
+	private class RangeEnumerator : IEnumerator<int> {
+		private int f, l;
+
+		private int cur;
+
+		public RangeEnumerator(int f, int l) {
+			cur = f-1;
+			this.f = f;
+			this.l = l;
+		}
+
+		public int Current {
+			get{
+				if(cur < f) throw new InvalidOperationException();
+				else return cur;
+			}
+		}
+
+		object IEnumerator.Current => Current;
+
+		void IDisposable.Dispose() {
+			
+		}
+
+		bool IEnumerator.MoveNext() {
+			if(cur >= l) return false;
+			cur++;
+			return true;
+		}
+
+		void IEnumerator.Reset() {
+			cur = f-1;
+		}
 	}
 }
 
@@ -63,7 +130,7 @@ public class Day {
 	}
 
 
-	int[] getForGroupAndWeek(bool group, bool week) {
+	public int[] getForGroupAndWeek(bool group, bool week) {
 	    return lessons[(week.toInt() << 1) | group.toInt()];
 	}
 
