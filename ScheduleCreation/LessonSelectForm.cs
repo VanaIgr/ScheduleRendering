@@ -65,7 +65,7 @@ namespace ScheduleCreation {
 				context.schedule.lessons.Add(lesson);
 				context.lessonsUsage.Add(0);
 
-				if(selectedLesson <= 0) selectedLesson = context.schedule.lessons.Count-1 + 1;
+				selectedLesson = context.schedule.lessons.Count-1 + 1;
 				
 				update();
 			}
@@ -87,13 +87,15 @@ namespace ScheduleCreation {
 			var set = new Dictionary<string, int>();
 			for(int i = 0; i < lessons.Count; i++) {
 				var lesson = context.schedule.lessons[i];
-				var str = lesson.name + " " + lesson.type + " " + lesson.loc + " " + lesson.extra;
+				var str = lesson.name.Trim() + lesson.type.Trim() + lesson.loc.Trim() + lesson.extra.Trim();
 				if(set.ContainsKey(str)) {
 					duplicates.Add(set[str]);
 					duplicates.Add(i);
 				}
 				else set.Add(str, i);
 			}
+
+			Control selectedControl = null;
 
 			for(int i = 0; i < lessons.Count; i++) {
 				lessonsTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -116,12 +118,17 @@ namespace ScheduleCreation {
 				if(selected && duplicate) l.BackColor = Color.FromArgb(30, 255/2, 10, 5);
 				else if(duplicate) l.BackColor = Color.FromArgb(40, 255, 20, 10);
 				else if(selected)l.BackColor = Color.FromArgb(20, 0, 0, 0);
+
 				lessonsTable.Controls.Add(l, 1, i);
+
+				if(selected) selectedControl = l;
 			}
 
 			Display.updateTableCounts(lessonsTable);
 			lessonsTable.ResumeLayout(false);
 			lessonsTable.PerformLayout();
+
+			if(selectedControl != null) (lessonsTable.Parent as Panel)?.ScrollControlIntoView(selectedControl);
 		}
 
 		private void button1_Click(object sender, EventArgs e) {
@@ -154,7 +161,7 @@ namespace ScheduleCreation {
 				var lesson = parseStringToLesson(patchLessonString(Clipboard.GetText()));
 				context.schedule.lessons.Add(lesson);
 				context.lessonsUsage.Add(0);
-				if(selectedLesson <= 0) selectedLesson = context.schedule.lessons.Count-1 + 1;		
+				selectedLesson = context.schedule.lessons.Count-1 + 1;		
 				update();
 			}
 			catch(Exception ex) {
