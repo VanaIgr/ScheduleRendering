@@ -58,181 +58,166 @@ public static class Display {
 		Schedule schedule,
 		ScheduleExt.Day curDay, int weekdayIndex,
 		IntRange lessonIndicesRange,
-		int maxLessonsCount, float fontSize
+		int maxLessonsCount, float fontSize, float? fontSize2_ = null
 	) {
-			var dayLabel = new VerticalLabel();
-			dayLabel.AutoSize = false;
-			//dayLabel.Text = weekdayIndex == -1 ? "Название д.н." : dayNames[weekdayIndex];
-			if(weekdayIndex != -1) dayLabel.Text = dayNames[weekdayIndex];
-			else if(curDay != null) dayLabel.Text = "Название д.н.";
+		var fontSize2 = fontSize2_.GetValueOrDefault(fontSize);
 
-			//dayLabel.TextAlign = ContentAlignment.MiddleLeft;
-			setProp(dayLabel, fontSize * 2.0f);
-			dayLabel.Margin = new Padding(0, 0, pad, pad);
-			dayLabel.Anchor = AllAnchors;
+		var dayLabel = new VerticalLabel();
+		dayLabel.AutoSize = false;
+		if(weekdayIndex != -1) dayLabel.Text = dayNames[weekdayIndex];
+		else if(curDay != null) dayLabel.Text = "Название д.н.";
+
+		setProp(dayLabel, fontSize2 * 2.0f);
+		dayLabel.Margin = new Padding(0, 0, pad, pad);
+		dayLabel.Anchor = AllAnchors;
+		
+		tl.Controls.Add(dayLabel, startCol + 0, startRow);
+
+		if(curDay == null || lessonIndicesRange.Size <= 0
+			|| curDay.timeIndex < 0 || curDay.lessons == null
+		) {
+			var height = Math.Max(1, maxLessonsCount * 2);
+			tl.SetRowSpan(dayLabel, height);
 			
-			tl.Controls.Add(dayLabel, startCol + 0, startRow);
+			Label blank = new Label();
+			blank.AutoSize = true;
+			blank.Anchor = AllAnchors;
+			blank.BackColor = Color.White;
+			blank.Margin = new Padding(0, 0, pad, pad);
+			
+			tl.Controls.Add(blank, startCol + 1, startRow);
+			tl.SetColumnSpan(blank, 3); //colsPerDay - 2
+			tl.SetRowSpan(blank, height);
+			
+			return;
+		}
 
-			if(curDay == null || lessonIndicesRange.Size <= 0
-				|| curDay.timeIndex < 0 || curDay.lessons == null
-			) {
-				var height = Math.Max(1, maxLessonsCount * 2);
-				tl.SetRowSpan(dayLabel, height);
-				
-				Label blank = new Label();
-				blank.AutoSize = true;
-				blank.Anchor = AllAnchors;
-				blank.BackColor = Color.White;
-				blank.Margin = new Padding(0, 0, pad, pad);
-				
-				tl.Controls.Add(blank, startCol + 1, startRow);
-				tl.SetColumnSpan(blank, 3); //colsPerDay - 2
-				tl.SetRowSpan(blank, height);
-				
-				return;
+		tl.SetRowSpan(dayLabel, lessonIndicesRange.Size * 2);
+
+        for(var lessonI = 0; lessonI < lessonIndicesRange.Size; lessonI++) {
+			var i = lessonIndicesRange.first + lessonI;
+			var time = schedule.times[curDay.timeIndex][i];
+
+			int lessonAt(bool group, bool week) { 
+				var it = curDay.getForGroupAndWeek(group, week);
+				if (i >= 0 && i < it.Length) return it[i];
+				else return 0;
 			}
 
-			tl.SetRowSpan(dayLabel, lessonIndicesRange.Size * 2);
+			var timeLabel = new Label();
+			timeLabel.AutoSize = true;
+			timeLabel.BackColor = Color.White;
+			timeLabel.Text = minuteOfDayToString(time.first) + "\n-\n" + minuteOfDayToString(time.last);
+			timeLabel.Anchor = AllAnchors;
+			timeLabel.TextAlign = ContentAlignment.MiddleCenter;
+			setProp(timeLabel, fontSize2);
+			timeLabel.Margin = new Padding(0, 0, pad, pad);
+			
+			tl.Controls.Add(timeLabel, startCol + 1, startRow + lessonI * 2);
+			tl.SetRowSpan(timeLabel, 2);
 
-            for(var lessonI = 0; lessonI < lessonIndicesRange.Size; lessonI++) {
-				var i = lessonIndicesRange.first + lessonI;
-				var time = schedule.times[curDay.timeIndex][i];
+			Control createLesson(int lessonIndex, bool yellow) {
+				if(lessonIndex <= 0) return new Label() {
+					AutoSize = true,
+					Anchor = AllAnchors,
+					Text = "",
+					BackColor = Color.White,
+					Margin = new Padding(0, 0, pad, pad),
+				};
 
-				int lessonAt(bool group, bool week) { 
-					var it = curDay.getForGroupAndWeek(group, week);
-					if (i >= 0 && i < it.Length) return it[i];
-					else return 0;
-				}
+				var lessonLabel = new Label();
+				lessonLabel.AutoSize = true;
+				lessonLabel.Anchor = AllAnchors;
+				lessonLabel.TextAlign = ContentAlignment.MiddleCenter;
+				setProp(lessonLabel, fontSize);
 
-				var timeLabel = new Label();
-				timeLabel.AutoSize = true;
-				timeLabel.BackColor = Color.White;
-				timeLabel.Text = minuteOfDayToString(time.first) + "\n-\n" + minuteOfDayToString(time.last);
-				timeLabel.Anchor = AllAnchors;
-				timeLabel.TextAlign = ContentAlignment.MiddleCenter;
-				setProp(timeLabel, fontSize);
-				timeLabel.Margin = new Padding(0, 0, pad, pad);
-				
-				tl.Controls.Add(timeLabel, startCol + 1, startRow + lessonI * 2);
-				tl.SetRowSpan(timeLabel, 2);
+				needResizing.Add(lessonLabel);
 
-				Control createLesson(int lessonIndex, bool yellow) {
-					if(lessonIndex <= 0) return new Label() {
-						AutoSize = true,
-						Anchor = AllAnchors,
-						Text = "",
-						BackColor = Color.White,
-						Margin = new Padding(0, 0, pad, pad),
-					};
+				var lesson = schedule.lessons[lessonIndex - 1];
 
-					var lessonLabel = new Label();
-					lessonLabel.AutoSize = true;
-					lessonLabel.Anchor = AllAnchors;
-					lessonLabel.TextAlign = ContentAlignment.MiddleCenter;
-					setProp(lessonLabel, fontSize);
+				var noBreakSpace = '\u00A0';
+                var textSB = new StringBuilder();
+                textSB.Append(lesson.name);
+                void addOther(string text) {
+                    if (text.Length == 0) return;
+                    textSB.Append(' ');
+                    var newText = text.Length < 20 ? text.Replace(' ', noBreakSpace) : text;
+                    textSB.Append(newText);
+                }
+                addOther(lesson.type);
+                addOther(lesson.loc);
+                addOther(lesson.extra);
 
-					needResizing.Add(lessonLabel);
+                lessonLabel.Text = textSB.ToString();
 
-					var lesson = schedule.lessons[lessonIndex - 1];
+				lessonLabel.Margin = new Padding(0, 0, pad, pad);
+				if(yellow) lessonLabel.BackColor = Color.Yellow;
+				else lessonLabel.BackColor = Color.White;
 
-					var noBreakSpace = '\u00A0';
-                    var textSB = new StringBuilder();
-                    textSB.Append(lesson.name);
-                    void addOther(string text) {
-                        if (text.Length == 0) return;
-                        textSB.Append(' ');
-                        var newText = text.Length < 20 ? text.Replace(' ', noBreakSpace) : text;
-                        textSB.Append(newText);
-                    }
-                    addOther(lesson.type);
-                    addOther(lesson.loc);
-                    addOther(lesson.extra);
-
-                    lessonLabel.Text = textSB.ToString();
-
-					//var p = new TableLayoutPanel();
-					//
-					//p.RowStyles.Add(new RowStyle(SizeType.Percent, 1));
-					//p.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1));
-					//p.RowCount = 1;
-					//p.ColumnCount = 1;
-					//
-					//p.Anchor = AllAnchors;
-					//p.AutoSize = true;
-					//p.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-					//p.Margin = new Padding(0, 0, pad, pad);
-					//if(yellow) p.BackColor = Color.Yellow;
-					//else p.BackColor = Color.White;
-					//p.Controls.Add(lessonLabel);
-
-					lessonLabel.Margin = new Padding(0, 0, pad, pad);
-					if(yellow) lessonLabel.BackColor = Color.Yellow;
-					else lessonLabel.BackColor = Color.White;
-
-					return lessonLabel;
-				}
-
-				var groupHorizontal = lessonAt(group: false, false) == lessonAt(group: true, false) &&
-				     lessonAt(group: false, true) == lessonAt(group: true, true);
-				var groupVertical = lessonAt(false, week: false) == lessonAt(false, week: true) &&
-				     lessonAt(true, week: false) == lessonAt(true, week: true);
-
-				var lessonStartCol = startCol + 2;
-				var lessonStartRow = startRow + lessonI * 2;
-
-				if(groupHorizontal && groupVertical) {
-					var it1 = createLesson(lessonAt(false, false), false);
-					
-					tl.Controls.Add(it1, lessonStartCol, lessonStartRow);
-					tl.SetColumnSpan(it1, 2);
-					tl.SetRowSpan(it1, 2);
-				}
-				else if(!groupHorizontal && !groupVertical) {
-					var it1 = createLesson(lessonAt(group: false, week: false), false);
-					tl.Controls.Add(it1, lessonStartCol + 0, lessonStartRow + 0);
-					
-					var it2 = createLesson(lessonAt(group: true, week: false), false);
-					tl.Controls.Add(it2, lessonStartCol + 1, lessonStartRow + 0);
-				
-					var it3 = createLesson(lessonAt(group: false, week: true), true);
-					tl.Controls.Add(it3, lessonStartCol + 0, lessonStartRow + 1);
-				
-					var it4 = createLesson(lessonAt(group: true, week: true), true);
-					tl.Controls.Add(it4, lessonStartCol + 1, lessonStartRow + 1);
-				}
-				else if(groupHorizontal) {
-					var it1 = createLesson(lessonAt(group: false, week: false), false);
-					tl.Controls.Add(it1, lessonStartCol + 0, lessonStartRow + 0);
-					tl.SetColumnSpan(it1, 2);
-					
-				
-					var it3 = createLesson(lessonAt(group: false, week: true), true);
-					tl.Controls.Add(it3, lessonStartCol + 0, lessonStartRow + 1);
-					tl.SetColumnSpan(it3, 2);
-				}
-				else {
-					var it1 = createLesson(lessonAt(group: false, week: false), false);
-					tl.Controls.Add(it1, lessonStartCol + 0, lessonStartRow + 0);
-					tl.SetRowSpan(it1, 2);
-					
-					var it2 = createLesson(lessonAt(group: true, week: false), false);
-					tl.Controls.Add(it2, lessonStartCol + 1, lessonStartRow + 0);
-					tl.SetRowSpan(it2, 2);
-				}
+				return lessonLabel;
 			}
 
-			if(lessonIndicesRange.Size < maxLessonsCount) {
-				Label blank = new Label();
-				blank.AutoSize = true;
-				blank.Anchor = AllAnchors;
-				blank.BackColor = Color.White;
-				blank.Margin = new Padding(0, 0, pad, pad);
+			var groupHorizontal = lessonAt(group: false, false) == lessonAt(group: true, false) &&
+			     lessonAt(group: false, true) == lessonAt(group: true, true);
+			var groupVertical = lessonAt(false, week: false) == lessonAt(false, week: true) &&
+			     lessonAt(true, week: false) == lessonAt(true, week: true);
 
-				tl.Controls.Add(blank, startCol + 0, startRow + lessonIndicesRange.Size * 2);
-				tl.SetColumnSpan(blank, 4);
-				tl.SetRowSpan(blank, (maxLessonsCount - lessonIndicesRange.Size) * 2);
+			var lessonStartCol = startCol + 2;
+			var lessonStartRow = startRow + lessonI * 2;
+
+			if(groupHorizontal && groupVertical) {
+				var it1 = createLesson(lessonAt(false, false), false);
+				
+				tl.Controls.Add(it1, lessonStartCol, lessonStartRow);
+				tl.SetColumnSpan(it1, 2);
+				tl.SetRowSpan(it1, 2);
+			}
+			else if(!groupHorizontal && !groupVertical) {
+				var it1 = createLesson(lessonAt(group: false, week: false), false);
+				tl.Controls.Add(it1, lessonStartCol + 0, lessonStartRow + 0);
+				
+				var it2 = createLesson(lessonAt(group: true, week: false), false);
+				tl.Controls.Add(it2, lessonStartCol + 1, lessonStartRow + 0);
+			
+				var it3 = createLesson(lessonAt(group: false, week: true), true);
+				tl.Controls.Add(it3, lessonStartCol + 0, lessonStartRow + 1);
+			
+				var it4 = createLesson(lessonAt(group: true, week: true), true);
+				tl.Controls.Add(it4, lessonStartCol + 1, lessonStartRow + 1);
+			}
+			else if(groupHorizontal) {
+				var it1 = createLesson(lessonAt(group: false, week: false), false);
+				tl.Controls.Add(it1, lessonStartCol + 0, lessonStartRow + 0);
+				tl.SetColumnSpan(it1, 2);
+				
+			
+				var it3 = createLesson(lessonAt(group: false, week: true), true);
+				tl.Controls.Add(it3, lessonStartCol + 0, lessonStartRow + 1);
+				tl.SetColumnSpan(it3, 2);
+			}
+			else {
+				var it1 = createLesson(lessonAt(group: false, week: false), false);
+				tl.Controls.Add(it1, lessonStartCol + 0, lessonStartRow + 0);
+				tl.SetRowSpan(it1, 2);
+				
+				var it2 = createLesson(lessonAt(group: true, week: false), false);
+				tl.Controls.Add(it2, lessonStartCol + 1, lessonStartRow + 0);
+				tl.SetRowSpan(it2, 2);
 			}
 		}
+
+		if(lessonIndicesRange.Size < maxLessonsCount) {
+			Label blank = new Label();
+			blank.AutoSize = true;
+			blank.Anchor = AllAnchors;
+			blank.BackColor = Color.White;
+			blank.Margin = new Padding(0, 0, pad, pad);
+
+			tl.Controls.Add(blank, startCol + 0, startRow + lessonIndicesRange.Size * 2);
+			tl.SetColumnSpan(blank, 4);
+			tl.SetRowSpan(blank, (maxLessonsCount - lessonIndicesRange.Size) * 2);
+		}
+	}
 
 	public static string timeToString(IntRange[] time) {
 		sb.Clear();
@@ -326,7 +311,7 @@ public static class Display {
 	
 	    float hRatio = lab.Height / extent.Height;
 	    float wRatio = lab.Width / extent.Width;
-	    float ratio = Math.Min(hRatio, wRatio);
+	    float ratio = Math.Min(hRatio, wRatio) + 0.3f;
 		if(ratio < 0.001) return;
 		if(ratio > 100) return;
 	

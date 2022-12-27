@@ -14,6 +14,8 @@ namespace ScheduleRendering {
 	public partial class Form1 : Form {
 		Schedule schedule;
 
+		Bitmap lastImage = null;
+
 		public Form1() {
 			InitializeComponent();
 
@@ -41,11 +43,15 @@ namespace ScheduleRendering {
 				return;
 			}
 
+			lastImage?.Dispose();
+			lastImage = null;
+
 			var b = new Button();
 			b.Text = "AAAAA";
 
 			var width = (int) widthNUD.Value;
 			var fontSize = (int) fontNUD.Value;
+			var fontSize2 = (int) fontSize2NUD.Value;
 
 			var tl = scheduleTLP;
 			var pad = (int) paddingNUD.Value;
@@ -122,7 +128,7 @@ namespace ScheduleRendering {
 						needResizing, 
 						tl, pad, col * Display.colsPerDay, startRowIndex,
 						schedule, dayIndex == null || dayIndex < 0 ? null : schedule.days[dayIndex.Value], weekdayIndex, lessonIndicesRange,
-						maxLessonsCount, fontSize
+						maxLessonsCount, fontSize, fontSize2
 					);
 				}
 
@@ -153,16 +159,26 @@ namespace ScheduleRendering {
 			}
 
 			tl.Refresh();
+
+			updateLastImage();
+
+			previewPB.Image = lastImage;
+		}
+
+		private void updateLastImage() {
+			if(lastImage == null) {
+				scheduleTLP.PerformLayout();
+				lastImage = new Bitmap(scheduleTLP.Width, scheduleTLP.Height);
+				scheduleTLP.DrawToBitmap(lastImage, new Rectangle(0, 0, lastImage.Width, lastImage.Height));
+			}
 		}
 
 		private void button3_Click(object sender, EventArgs e) {
-			using(var bmp = new Bitmap(scheduleTLP.Width, scheduleTLP.Height)) {
-			scheduleTLP.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+			updateLastImage();
 			saveFileDialog1.FileName = "schedule.png";
 			saveFileDialog1.Filter = "PNG | *.png";
 			if(saveFileDialog1.ShowDialog() == DialogResult.OK) {
-				bmp.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Png);
-			}
+				lastImage.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Png);
 			}
 		}
 	}

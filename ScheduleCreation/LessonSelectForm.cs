@@ -135,7 +135,7 @@ namespace ScheduleCreation {
 			var form = new NoLessonSelectForm();
 			if(form.ShowDialog() == DialogResult.OK) {
 				selectedLesson = form.SelectedNumber;
-				update();
+				DialogResult = DialogResult.OK;
 			}
 		}
 
