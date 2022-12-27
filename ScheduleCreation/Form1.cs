@@ -11,10 +11,7 @@ using static ScheduleExt;
 namespace ScheduleCreation {
 	public partial class Form1 : Form {
 
-		List<IntRange[]> times = new List<IntRange[]>();
-		List<int> timesUsage = new List<int>();
-
-		Schedule schedule;
+		ScheduleContext context;
 
 		public Form1() {
 			InitializeComponent();
@@ -29,20 +26,32 @@ namespace ScheduleCreation {
 				new IntRange(timeToMinuteOfDay(15, 50), timeToMinuteOfDay(17, 20)),
 				new IntRange(timeToMinuteOfDay(17, 40), timeToMinuteOfDay(19, 10))
 			};
-			var lesson = new int[0];
-			var day = new ScheduleExt.Day(
-				new Lesson[]{}, timeTable, new int[][]{ lesson, lesson, lesson, lesson }
-			);
+			var l = timeTable.Length;
 
-			schedule = new Schedule(
+			context = new ScheduleContext();
+			context.schedule = new Schedule(
 				new Weeks(today.Day, today.Month, today.Year, new bool[]{false, true}),
-				new ScheduleExt.Day[] { day, day, day, day, day, day, day }
+				new List<ScheduleExt.Day> { newDay(l), newDay(l), newDay(l), newDay(l), newDay(l), newDay(l), newDay(l) },
+				new List<IntRange[]>{ timeTable },
+				new List<Lesson>(),
+				new int[] { 0, 1, 2, 3, 4, 5, 6 }
 			);
 
-			updateDisplayFromSchedule();
+			updateScheduleContext();
 		}
 
-		private void updateDisplayFromSchedule() {
+		private ScheduleExt.Day newDay(int l) {
+			return new ScheduleExt.Day(0, new int[][]{ 
+				new int[l], new int[l], new int[l], new int[l]
+			});
+		}
+
+		private void updateScheduleContext() {
+			var schedule = context.schedule;
+			var timesUsage = context.timesUsage;
+			var daysUsage = context.daysUsage;
+			var lessonsUsage = context.lessonsUsage;
+
 			var date = schedule.weeksDescription;
 			startDate.Value = new DateTime(date.year, date.month, date.day);
 
@@ -53,175 +62,109 @@ namespace ScheduleCreation {
 			}
 
 			timesUsage.Clear();
-			for(int i = 0; i < times.Count; i++) timesUsage.Add(0);
+			for(int i = 0; i < schedule.times.Count; i++) timesUsage.Add(0);
 
-			for(int i = 0; i < schedule.week.Length; i++) {
-				var time = schedule.week[i].time;
-				if(time == null) continue;
-				var index = times.IndexOf(time);
-				if(index == -1) {
-					times.Add(time);
-					timesUsage.Add(1);
+			for(int i = 0; i < context.schedule.days.Count; i++) {
+				var timeIndex = context.schedule.days[i].timeIndex;
+				if(timeIndex != -1) timesUsage[timeIndex]++;
+			}
+
+			lessonsUsage.Clear();
+			for(int i = 0; i < schedule.lessons.Count; i++) lessonsUsage.Add(0);
+
+			foreach(var day in context.schedule.days) 
+			foreach(var lessonG in day.lessons) {
+				for(int i = 0; i < lessonG.Length; i++) { 
+					if(lessonG[i] > 0) lessonsUsage[lessonG[i]-1]++;
 				}
-				else timesUsage[index]++;
 			}
 
-			updateTime();
+			daysUsage.Clear();
+			for(int i = 0; i < context.schedule.days.Count; i++) daysUsage.Add(0);
 
-			//for(int i = 0; i < 7; i++) {
-			//	var name
-			//}
+			for(int i = 0; i < schedule.daysInWeek.Length; i++) {
+				var dayIndex = schedule.daysInWeek[i];
+				if(dayIndex >= 0) daysUsage[dayIndex]++;
+			}
+
+			updateDays();
 		}
 
-		private void updateTime() {
-			timeTable.SuspendLayout();
-			timeTable.RowStyles.Clear();
-			timeTable.Controls.Clear();
+		private void updateDays() {
+			var schedule = context.schedule;
+			var timesUsage = context.timesUsage;
 
-			int i = 0;
+			daysTable.SuspendLayout();
 
-			for(;i < times.Count; i++) {
-				timeTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+			Display.clearTable(daysTable);
+
+			for(int i = 0; i < schedule.daysInWeek.Length; i++) {
+				daysTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
 				var n = new Label();
+				Display.setFont(n);
+				n.Font = new Font(n.Font, FontStyle.Underline);
 				n.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-				setFont(n);
-				n.Text = "№" + i + " (" + timesUsage[i] + " исп.): ";
-
-				timeTable.Controls.Add(n, 0, i);
-
-				var l = new TextBox();
-				l.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-				setFont(l);
-				l.Text = timeToString(times[i]);
+				n.Text = dayNames[i] + ": ";
 				int j = i;
-				l.KeyDown += (a, b) => {
-					if(b.KeyCode != Keys.Enter) return;
-					try{ 
-						times[j] = parseTime(l.Text); 
-						statusLabel.Text = ""; 
-						this.ActiveControl = null;
+				var dayIndex = schedule.daysInWeek[j];
+				n.Click += (a, b) => {
+					var form = new DaySelectForm(context, dayIndex);
+					if(form.ShowDialog() == DialogResult.OK) {
+						schedule.daysInWeek[j] = form.SelectedDay;
+						updateScheduleContext();
 					}
-					catch(Exception e) { statusLabel.Text = e.ToString(); }
 				};
-				timeTable.Controls.Add(l, 1, i);
-			}
-			{
-				timeTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-				var n = new Label();
-				n.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-				setFont(n);
-				n.Text = "Добавить: ";
-				timeTable.Controls.Add(n, 0,i);
+				daysTable.Controls.Add(n, 0, i);
 
-				var l = new TextBox();
-				setFont(l);
-				l.KeyDown += (a, b) => {
-					if(b.KeyCode != Keys.Enter) return;
-					try{ 
-						var res = parseTime(l.Text); 
-						times.Add(res);
-						statusLabel.Text = ""; 
-						updateDisplayFromSchedule();
-					}
-					catch(Exception e) { statusLabel.Text = e.ToString(); }
-				};
-				timeTable.Controls.Add(l, 1, i);
+				var l = new Label();
+				Display.setFont(l);
+				l.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+				l.Text = schedule.daysInWeek[i] == -1 ? "Не назначен"
+					: Display.dayToStringSmall(
+						schedule, context.schedule.days[dayIndex], 
+						dayIndex, context.daysUsage[dayIndex]
+					);
 
-				i++;
+				daysTable.Controls.Add(l, 1, i);
 			}
 
-			{
-				timeTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+			Display.updateTableCounts(daysTable);
 
-				var n = new Label();
-				n.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-				setFont(n);
-				n.Text = "Удалить №: ";
-				timeTable.Controls.Add(n, 0, i);
-
-				var l = new NumericUpDown();
-				setFont(l);
-				l.KeyDown += (a, b) => {
-					if(b.KeyCode != Keys.Enter) return;
-
-					try{ 
-						deleteTime((int) l.Value);
-						statusLabel.Text = ""; 
-						updateDisplayFromSchedule();
-					}
-					catch(Exception e) { statusLabel.Text = e.ToString(); }
-				};
-				timeTable.Controls.Add(l, 1, i);
-
-				i++;
-			}
-
-			timeTable.RowCount = timeTable.RowStyles.Count;
-
-			timeTable.ResumeLayout(false);
-			timeTable.PerformLayout();
+			daysTable.ResumeLayout(false);
+			daysTable.PerformLayout();
 		}
 
-		private void deleteTime(int index) {
-			var time = times[index];
-			foreach(var day in schedule.week) {
-				if(day.time == time) day.time = null;
-			}
-			times.RemoveAt(index);
+		private void button2_Click(object sender, EventArgs e) {
+			new DaySelectForm(context, -1).ShowDialog();
+			updateScheduleContext();
 		}
 
-		static StringBuilder sb = new StringBuilder();
-
-		private IntRange[] parseTime(string str) {
-			var list = new List<IntRange>();
-
-			int lastSymbol = str.Length - 1;
-			for(; lastSymbol > 0; lastSymbol--) if(!char.IsWhiteSpace(str[lastSymbol])) break;
-			int len = lastSymbol+1;
-
-			int i = 0;
-			while(i < len) {
-				var start = i;
-				while(str[i] != ':') i++;
-				var hourF = int.Parse(str.Substring2(start, i).Trim());
-				i++;
-
-				start = i;
-				while(str[i] != '-') i++;
-				var minuteF = int.Parse(str.Substring2(start, i).Trim());
-				i++;
-
-				start = i;
-				while(str[i] != ':') i++;
-				var hourS = int.Parse(str.Substring2(start, i).Trim());
-				i++;
-
-				start = i;
-				while(i < len && str[i] != ',') i++;
-				var minuteS = int.Parse(str.Substring2(start, i).Trim());
-				i++;
-
-				list.Add(new IntRange(timeToMinuteOfDay(hourF, minuteF), timeToMinuteOfDay(hourS, minuteS)));
-			}
-
-			return list.ToArray();
+		private void button3_Click(object sender, EventArgs e) {
+			new SelectLessonForm(context, 0).ShowDialog();
+			updateScheduleContext();
 		}
 
-		private string timeToString(IntRange[] time) {
-			sb.Clear();
-			foreach(var it in time) {
-				sb.Append(minuteOfDayToString(it.first))
-					.Append('-')
-					.Append(minuteOfDayToString(it.last))
-					.Append(", ");
-			}
-			return sb.ToString();
+		private void button4_Click(object sender, EventArgs e) {
+			new TimeForm(context, 0).ShowDialog();
+			updateScheduleContext();
 		}
 
-		private void setFont(Control c) {
-			c.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 204);
+		private void button5_Click(object sender, EventArgs e) {
+			openFileDialog1.Filter = "schedule file | *.scd";
+			if(openFileDialog1.ShowDialog() == DialogResult.OK) {
+				try { 
+					var str = System.IO.File.ReadAllText(openFileDialog1.FileName);
+					var newContext = new ScheduleContext();
+					newContext.schedule = parseSchedule(str);
+					context = newContext;
+					statusLabel.Text = "";
+					updateScheduleContext();
+				} catch(Exception ex) {
+					statusLabel.Text = ex.ToString();
+				}
+			}
 		}
 	}
 }

@@ -37,10 +37,10 @@ namespace ScheduleRendering {
 			this.label3 = new System.Windows.Forms.Label();
 			this.paddingNUD = new System.Windows.Forms.NumericUpDown();
 			this.layoutTB = new System.Windows.Forms.TextBox();
-			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.tableLayoutPanel3 = new ScheduleRendering.Panel2();
 			this.scheduleTLP = new ScheduleRendering.Table2();
+			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.fontNUD)).BeginInit();
@@ -114,11 +114,13 @@ namespace ScheduleRendering {
 			this.button3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.button3.BackColor = System.Drawing.Color.RoyalBlue;
 			this.tableLayoutPanel2.SetColumnSpan(this.button3, 2);
+			this.button3.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.button3.FlatAppearance.BorderSize = 0;
 			this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.button3.Location = new System.Drawing.Point(3, 422);
+			this.button3.Location = new System.Drawing.Point(3, 424);
 			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(250, 25);
+			this.button3.Size = new System.Drawing.Size(250, 23);
 			this.button3.TabIndex = 7;
 			this.button3.Text = "Сохранить";
 			this.button3.UseVisualStyleBackColor = false;
@@ -260,12 +262,8 @@ namespace ScheduleRendering {
 			this.layoutTB.Name = "layoutTB";
 			this.layoutTB.Size = new System.Drawing.Size(149, 65);
 			this.layoutTB.TabIndex = 11;
-			this.layoutTB.Text = "1, 4,\r\n2, 5,\r\n3,";
+			this.layoutTB.Text = "0, 3,\r\n1, 4,\r\n2,";
 			this.layoutTB.WordWrap = false;
-			// 
-			// openFileDialog1
-			// 
-			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
 			// tableLayoutPanel3
 			// 
@@ -292,6 +290,10 @@ namespace ScheduleRendering {
 			this.scheduleTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.scheduleTLP.Size = new System.Drawing.Size(0, 0);
 			this.scheduleTLP.TabIndex = 0;
+			// 
+			// openFileDialog1
+			// 
+			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
 			// Form1
 			// 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-static class ScheduleExt {
+public static class ScheduleExt {
 
 public static string[] dayNames = new string[]{ "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье" };
 public static string minuteOfDayToString(int mod) {
@@ -119,18 +119,15 @@ public class IntRange {
 
 //(group << 1) | числитель/знаменатель
 public class Day {
-	public Lesson[] lessonsUsed;
-	public IntRange[] time;
+	public int timeIndex;
 	public int[][] lessons;
 
 	public Day(
-		Lesson[] lessonsUsed,
-		IntRange[] time,
+		int timeIndex,
 		int[][] lessons
 	) {
-		this.lessonsUsed = lessonsUsed;
-		this.time		 = time;
-		this.lessons	 = lessons;
+		this.timeIndex = timeIndex;
+		this.lessons = lessons;
 	}
 
 
@@ -143,8 +140,7 @@ public class Day {
 	static Day() {
 		var lesson = new int[0];
 		emptyDay = new Day(
-			new Lesson[0], new IntRange[0],
-			new int[][]{ lesson, lesson, lesson, lesson }
+			-1, new int[][]{ lesson, lesson, lesson, lesson }
 		);
 	}
 }
@@ -187,7 +183,20 @@ public class StringView {
 	public bool isEmpty() { return begin == end; }
 }
 
-static StringView parseNextValue(this StringView it) {
+	internal static IntRange calcDayLessonIndices(Day curDay) {
+		if(curDay == null) return new IntRange(0, -1);
+		var range0 = curDay.lessons[0].calculateNozeropaddingRange();
+		var range1 = curDay.lessons[1].calculateNozeropaddingRange();
+		var range2 = curDay.lessons[2].calculateNozeropaddingRange();
+		var range3 = curDay.lessons[3].calculateNozeropaddingRange();
+
+		return new IntRange(
+		    min2(range0.first, range1.first, range2.first, range3.first),
+		    max2(range0.last, range1.last, range2.last, range3.last)
+		);
+	}
+
+	static StringView parseNextValue(this StringView it) {
 	var i = it.begin;
 	while(it.source[i] != ',') i++;
 	return new StringView(it.source, it.begin, i);
@@ -302,32 +311,6 @@ static (StringView, IntRange[]) parseTime(this StringView it) {
     return (new StringView(it.source, it.begin, curBegin), time);
 }
 
-static (StringView, Day) parseDay(this StringView it) {
-    var lessonsCountS = new StringView(it.source, it.begin, it.end).parseNextValue();
-    var curBegin = lessonsCountS.end;
-    var lessonsCount = lessonsCountS.toInt();
-    if(lessonsCount == 0) return (lessonsCountS, Day.emptyDay);
-    var lessonsUsed = new Lesson[lessonsCount];
-	for(int i = 0; i < lessonsCount; i++) {
-        var pair = new StringView(it.source, curBegin+1, it.end).parseLesson();
-        curBegin = pair.Item1.end;
-        lessonsUsed[i] = pair.Item2;
-    }
-
-    var pair1 = new StringView(it.source, curBegin, it.end).parseTime();
-    curBegin = pair1.Item1.end;
-	var time = pair1.Item2;
-
-    var pair2 = new StringView(it.source, curBegin, it.end).parseLessonIndices(time.Length);
-    curBegin = pair2.Item1.end;
-    var lessons = pair2.Item2;
-
-    return (
-        new StringView(it.source, it.begin, curBegin),
-        new Day(lessonsUsed, time, lessons)
-    );
-}
-
 static (StringView, Weeks) parseWeeks(this StringView it) {
     var day = it.parseNextValue();
     var month = new StringView(it.source, day.end+1  , it.end).parseNextValue();
@@ -350,14 +333,23 @@ static (StringView, Weeks) parseWeeks(this StringView it) {
 
 public class Schedule{
 	public Weeks weeksDescription;
-	public Day[] week;
+	public List<Day> days;
+	public List<IntRange[]> times;
+	public List<Lesson> lessons;
+	public int[] daysInWeek;
 
 	public Schedule(
 		Weeks weeksDescription,
-		Day[] week
+		List<Day> days,
+		List<IntRange[]> times,
+		List<Lesson> lessons,
+		int[] daysInWeek
 	) {
 		this.weeksDescription = weeksDescription;
-		this.week = week;
+		this.days = days;
+		this.times = times;
+		this.lessons = lessons;
+		this.daysInWeek = daysInWeek;
 	}
 }
 
@@ -430,23 +422,7 @@ public static Schedule parseSchedule(string input_) {
     begin = versionS.end + 1;
     var version = versionS.toInt();
 
-    if(version == 0) {
-        var week = new List<Day>();
-
-        for (int i = 0; i < 7; i++) {
-            var pair0 = new StringView(input, begin, input.Length).parseDay();
-            begin = pair0.Item1.end + 1;
-            week.Add(pair0.Item2);
-        }
-		
-        var sv = new StringView(input, begin, input.Length);
-        var pair = sv.parseWeeks();
-        begin = pair.Item1.end + 1;
-        var weeks = pair.Item2;
-
-        return new Schedule(weeks, week.ToArray());
-    }
-    else if(version == 1) {
+    if(version == 2) {
         var lessonsCountS = new StringView(input, begin, input.Length).parseNextValue();
         begin = lessonsCountS.end + 1;
         var lessonsCount = lessonsCountS.toInt();
@@ -470,7 +446,7 @@ public static Schedule parseSchedule(string input_) {
         var dayCountS = new StringView(input, begin, input.Length).parseNextValue();
         begin = dayCountS.end + 1;
         var dayCount = dayCountS.toInt();
-        var dayUsed = new Day[dayCount]; 
+        var daysUsed = new Day[dayCount]; 
 		for(int i = 0; i < dayCount; i++) {
             var timeIndexS = new StringView(input, begin, input.Length).parseNextValue();
             begin = timeIndexS.end + 1;
@@ -480,11 +456,7 @@ public static Schedule parseSchedule(string input_) {
 
             var pair = new StringView(input, begin, input.Length).parseLessonIndices(time.Length);
             begin = pair.Item1.end + 1;
-            dayUsed[i] = new Day(
-                lessonsUsed,
-                time,
-                pair.Item2
-            );
+            daysUsed[i] = new Day(timeIndex, pair.Item2);
         }
 
         var days = new int[7];
@@ -493,6 +465,7 @@ public static Schedule parseSchedule(string input_) {
             begin = dayS.end + 1;
             var day = dayS.toInt();
             days[i] = day;
+			if(day > daysUsed.Length) throw new Exception("Неаправильный номер дня: " + day);
         }
 
         var sv = new StringView(input, begin, input.Length);
@@ -500,19 +473,12 @@ public static Schedule parseSchedule(string input_) {
         begin = pair0.Item1.end + 1;
         var weeks = pair0.Item2;
 
-        Day getDayUsed(int index) {
-			if(index == 0) return Day.emptyDay;
-			else return dayUsed[index-1];
-		}
-
         return new Schedule(
             weeks,
-            new[]{
-				getDayUsed(days[0]), getDayUsed(days[1]),
-				getDayUsed(days[2]), getDayUsed(days[3]),
-				getDayUsed(days[4]), getDayUsed(days[5]),
-				getDayUsed(days[6]), 
-			}
+			daysUsed.ToList(),
+			timeUsed.ToList(),
+			lessonsUsed.ToList(),
+			days
         );
     }
     else throw new Exception($"unknown version=${version}");

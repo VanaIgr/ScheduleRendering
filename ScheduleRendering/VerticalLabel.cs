@@ -6,15 +6,15 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace ScheduleRendering {
-	class VerticalLabel : Label {
+	class VerticalLabel : Control {
 
 		public VerticalLabel() : base() {
 			this.BackColor = Color.White;
 			this.ForeColor = this.BackColor;
 		}
 
-		public override Color BackColor { get => base.BackColor; set { base.BackColor=value; base.ForeColor = value; } }
-		public override Color ForeColor { get => base.ForeColor; set => base.ForeColor=base.BackColor; }
+		//public override Color BackColor { get => base.BackColor; set { base.BackColor=value; base.ForeColor = value; } }
+		//public override Color ForeColor { get => base.ForeColor; set => base.ForeColor=base.BackColor; }
 
 		public override string Text { get => base.Text; set {
 			base.Text=value; 
