@@ -33,22 +33,25 @@ namespace ScheduleCreation {
 			this.changeB = new System.Windows.Forms.Button();
 			this.button1 = new System.Windows.Forms.Button();
 			this.lessonsTable = new System.Windows.Forms.TableLayoutPanel();
+			this.panel1 = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
+			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// tableLayoutPanel1
 			// 
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-			this.tableLayoutPanel1.Controls.Add(this.lessonsTable, 0, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 2;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(800, 450);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
@@ -181,7 +184,6 @@ namespace ScheduleCreation {
 			// 
 			// lessonsTable
 			// 
-			this.lessonsTable.AutoScroll = true;
 			this.lessonsTable.AutoSize = true;
 			this.lessonsTable.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.lessonsTable.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
@@ -189,7 +191,7 @@ namespace ScheduleCreation {
 			this.lessonsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.lessonsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.lessonsTable.Dock = System.Windows.Forms.DockStyle.Top;
-			this.lessonsTable.Location = new System.Drawing.Point(3, 3);
+			this.lessonsTable.Location = new System.Drawing.Point(0, 0);
 			this.lessonsTable.Name = "lessonsTable";
 			this.lessonsTable.RowCount = 2;
 			this.lessonsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -197,18 +199,30 @@ namespace ScheduleCreation {
 			this.lessonsTable.Size = new System.Drawing.Size(794, 3);
 			this.lessonsTable.TabIndex = 0;
 			// 
-			// SelectLessonForm
+			// panel1
+			// 
+			this.panel1.AutoScroll = true;
+			this.panel1.Controls.Add(this.lessonsTable);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel1.Location = new System.Drawing.Point(3, 3);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(794, 407);
+			this.panel1.TabIndex = 0;
+			// 
+			// LessonSelectForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.tableLayoutPanel1);
-			this.Name = "SelectLessonForm";
+			this.Name = "LessonSelectForm";
 			this.Text = "Выбор урока";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel2.PerformLayout();
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -224,5 +238,6 @@ namespace ScheduleCreation {
 		private System.Windows.Forms.Button addB;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Label selectedLessonIndexL;
+		private System.Windows.Forms.Panel panel1;
 	}
 }

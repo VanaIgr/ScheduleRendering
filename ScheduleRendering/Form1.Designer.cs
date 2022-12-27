@@ -37,10 +37,10 @@ namespace ScheduleRendering {
 			this.label3 = new System.Windows.Forms.Label();
 			this.paddingNUD = new System.Windows.Forms.NumericUpDown();
 			this.layoutTB = new System.Windows.Forms.TextBox();
-			this.tableLayoutPanel3 = new ScheduleRendering.Panel2();
-			this.scheduleTLP = new ScheduleRendering.Table2();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.tableLayoutPanel3 = new ScheduleRendering.Panel2();
+			this.scheduleTLP = new ScheduleRendering.Table2();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.fontNUD)).BeginInit();
@@ -66,6 +66,10 @@ namespace ScheduleRendering {
 			// 
 			// tableLayoutPanel2
 			// 
+			this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.tableLayoutPanel2.AutoSize = true;
+			this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.tableLayoutPanel2.ColumnCount = 2;
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -265,6 +269,10 @@ namespace ScheduleRendering {
 			this.layoutTB.Text = "0, 3,\r\n1, 4,\r\n2,";
 			this.layoutTB.WordWrap = false;
 			// 
+			// openFileDialog1
+			// 
+			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.AutoScroll = true;
@@ -291,10 +299,6 @@ namespace ScheduleRendering {
 			this.scheduleTLP.Size = new System.Drawing.Size(0, 0);
 			this.scheduleTLP.TabIndex = 0;
 			// 
-			// openFileDialog1
-			// 
-			this.openFileDialog1.FileName = "openFileDialog1";
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -304,6 +308,7 @@ namespace ScheduleRendering {
 			this.Name = "Form1";
 			this.Text = "Расписание";
 			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.fontNUD)).EndInit();
