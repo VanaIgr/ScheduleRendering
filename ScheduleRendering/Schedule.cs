@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public static class ScheduleExt {
 
@@ -42,13 +43,92 @@ public static int min2(int f, params int[] os) {
 	return it;
 }
 
+public static Lesson parseStringToLesson(string str) {
+	int nameEnd = -1;
+
+	int typeStart = -1;
+	int typeEnd = -1;
+
+	int locStart = -1;
+	int locEnd = -1;
+
+	int extraStart = -1;
+
+	var r1 = new Regex(@"(\s|\.|,|^)((лк)|(пр)|(лб)|(кр))(\s|\.|,|$)", RegexOptions.IgnoreCase);
+	var m1 = r1.Match(str);
+	if(m1.Success) {
+		typeStart = nameEnd = m1.Groups[2].Index;
+		typeEnd = typeStart + m1.Groups[2].Length;
+	}
+
+	var r2 = new Regex(@"(\s|\.|,|^)(([\dа-яё]+?)-([\dа-яё]+?))(\s|\.|,|^)", RegexOptions.IgnoreCase);
+	var m2 = r2.Match(str, typeEnd == -1 ? 0 : typeEnd);
+	if(m2.Success) {
+		locStart = m2.Groups[2].Index;
+		locEnd = locStart + m2.Groups[2].Length;
+		extraStart = m2.Index + m2.Length;
+	}
+
+	string name = "", type = "", loc = "", extra = "";
+
+	if(typeStart == -1 || typeEnd == -1) {
+		if(locStart == -1 || locEnd == -1) {
+			name = str;
+		}
+		else nameEnd = locStart;
+	}
+	else if(locStart == -1 || locEnd == -1) {
+		extraStart = typeEnd;
+	}
+
+	if(nameEnd != -1) {
+		name = str.Substring2(0, nameEnd);
+	}
+	if(typeStart != -1 && typeEnd != -1) {
+		type = str.Substring2(typeStart, typeEnd);
+	}
+	if(locStart != -1 && locEnd != -1) {
+		loc = str.Substring2(locStart, locEnd);
+	}
+	if(extraStart != -1) {
+		extra = str.Substring2(extraStart, str.Length);
+	}
+
+	return new Lesson(type.Trim(), loc.Trim(), name.Trim(), extra.Trim());
+}
+
+public static string patchLessonString(string st) {
+	var sb = new StringBuilder();
+
+	st = st.Replace("\r\n", "\n").Replace("\n\r", "\n").Replace('\r', '\n');
+
+	char? prev = null;
+	for(var i = 0; i < st.Length; i++) {
+		var c = st[i];
+
+		if(c == '\n') {
+			//if surrounded by letters or punctuation or something
+			if(prev != null && !char.IsWhiteSpace(prev.Value)) {
+				char? next = i+1 < st.Length ? (char?) st[i+1] : null;
+				if(next != null && !char.IsWhiteSpace(next.Value)) {
+					sb.Append(" ");
+				}
+			}
+		}
+		else sb.Append(c);
+		prev = c;
+	}
+
+	return sb.ToString().Trim();
+}
+
 public static int max2(int f, params int[] os) {
 	var it = f;
 	foreach(var o in os) it = Math.Max(it, o);
 	return it;
 }
 
-public class Lesson{
+public class Lesson : ICloneable {
     public string type;
     public string loc;
     public string name;
@@ -62,6 +142,12 @@ public class Lesson{
 		this.loc   = loc;
 		this.name  = name;
 		this.extra = extra;
+	}
+
+	public object Clone() {
+		return new Lesson(
+			this.type, this.loc, this.name, this.extra
+		);
 	}
 }
 

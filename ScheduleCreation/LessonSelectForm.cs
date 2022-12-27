@@ -6,10 +6,13 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using static ScheduleExt;
 
 namespace ScheduleCreation {
 	public partial class LessonSelectForm : Form {
 		ScheduleContext context;
+
+		List<int> duplicates = new List<int>();
 
 		int selectedLesson;
 
@@ -33,6 +36,8 @@ namespace ScheduleCreation {
 
 			var form = new LessonEditForm(context, context.schedule.lessons[selectedLesson - 1]);
 			form.ShowDialog();
+
+			update();
 		}
 
 		private void deleteB_Click(object sender, EventArgs e) {
@@ -78,6 +83,18 @@ namespace ScheduleCreation {
 
 			lessonsTable.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
 
+			duplicates.Clear();
+			var set = new Dictionary<string, int>();
+			for(int i = 0; i < lessons.Count; i++) {
+				var lesson = context.schedule.lessons[i];
+				var str = lesson.name + " " + lesson.type + " " + lesson.loc + " " + lesson.extra;
+				if(set.ContainsKey(str)) {
+					duplicates.Add(set[str]);
+					duplicates.Add(i);
+				}
+				else set.Add(str, i);
+			}
+
 			for(int i = 0; i < lessons.Count; i++) {
 				lessonsTable.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
@@ -86,13 +103,19 @@ namespace ScheduleCreation {
 				var l = new Label();
 				l.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 				Display.setFont(l);
-				l.Text = lesson.type + " " + lesson.loc + " " + lesson.extra;
+				l.Text = lesson.name + " " + lesson.type + " " + lesson.loc + " " + lesson.extra;
 				var j = i;
 				l.Click += (a, b) => {
 					selectedLesson = j + 1;
 					update();
 				};
-				if(i == selectedLesson - 1) l.BackColor = Color.FromArgb(20, 0, 0, 0);
+
+				var duplicate = duplicates.Contains(i);
+				var selected = i == selectedLesson - 1;
+
+				if(selected && duplicate) l.BackColor = Color.FromArgb(30, 255/2, 10, 5);
+				else if(duplicate) l.BackColor = Color.FromArgb(40, 255, 20, 10);
+				else if(selected)l.BackColor = Color.FromArgb(20, 0, 0, 0);
 				lessonsTable.Controls.Add(l, 1, i);
 			}
 
@@ -106,6 +129,39 @@ namespace ScheduleCreation {
 			if(form.ShowDialog() == DialogResult.OK) {
 				selectedLesson = form.SelectedNumber;
 				update();
+			}
+		}
+
+		private void cloneB_Click(object sender, EventArgs e) {
+			if(selectedLesson <= 0) return;
+
+			var lesson = (Lesson) context.schedule.lessons[selectedLesson-1].Clone();
+			context.schedule.lessons.Add(lesson);
+			context.lessonsUsage.Add(0);
+			var oldSelected = selectedLesson;
+			selectedLesson = context.schedule.lessons.Count-1 + 1;
+			update();
+			if(new LessonEditForm(context, lesson).ShowDialog() != DialogResult.OK) {
+				context.schedule.lessons.RemoveAt(selectedLesson - 1);
+				context.lessonsUsage.RemoveAt(selectedLesson - 1);
+				selectedLesson = oldSelected;
+			}
+			update();
+		}
+
+		private void pasteFromClipboardB_Click(object sender, EventArgs e) {
+			try{
+				var lesson = parseStringToLesson(patchLessonString(Clipboard.GetText()));
+				context.schedule.lessons.Add(lesson);
+				context.lessonsUsage.Add(0);
+				if(selectedLesson <= 0) selectedLesson = context.schedule.lessons.Count-1 + 1;		
+				update();
+			}
+			catch(Exception ex) {
+				MessageBox.Show(
+@"Не удалось вставить с клавиатуры. Строка должна иметь подобный формат: 
+Технология разработки и защиты баз данных лк 229-2 Куприянов А.А.
+Ошибка: " + ex.ToString());
 			}
 		}
 	}

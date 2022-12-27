@@ -110,7 +110,7 @@ namespace ScheduleCreation {
 						}
 						else { 
 							var lesson = context.schedule.lessons[lessonIndex - 1];
-							l.Text = lesson.type + " " + lesson.loc + " " + lesson.extra;
+							l.Text = lesson.name + " " + lesson.type + " " + lesson.loc + " " + lesson.extra;
 						}
 
 						dayLessonsTable.Controls.Add(l, 1 + group, i*2 + week);
