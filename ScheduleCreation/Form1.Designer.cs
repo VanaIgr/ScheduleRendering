@@ -24,6 +24,7 @@ namespace ScheduleCreation {
 		/// содержимое этого метода с помощью редактора кода.
 		/// </summary>
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -33,15 +34,17 @@ namespace ScheduleCreation {
 			this.label4 = new System.Windows.Forms.Label();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.button5 = new System.Windows.Forms.Button();
 			this.button1 = new System.Windows.Forms.Button();
 			this.statusLabel = new System.Windows.Forms.Label();
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
 			this.button4 = new System.Windows.Forms.Button();
-			this.button5 = new System.Windows.Forms.Button();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.button6 = new System.Windows.Forms.Button();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.tableLayoutPanel3.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -103,6 +106,7 @@ namespace ScheduleCreation {
 			this.startDate.Name = "startDate";
 			this.startDate.Size = new System.Drawing.Size(614, 25);
 			this.startDate.TabIndex = 2;
+			this.startDate.ValueChanged += new System.EventHandler(this.startDate_ValueChanged);
 			// 
 			// weeksText
 			// 
@@ -112,6 +116,7 @@ namespace ScheduleCreation {
 			this.weeksText.Name = "weeksText";
 			this.weeksText.Size = new System.Drawing.Size(614, 25);
 			this.weeksText.TabIndex = 3;
+			this.weeksText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.weeksText_KeyUp);
 			// 
 			// daysTable
 			// 
@@ -163,13 +168,15 @@ namespace ScheduleCreation {
 			// 
 			this.tableLayoutPanel2.AutoSize = true;
 			this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel2.ColumnCount = 3;
+			this.tableLayoutPanel2.ColumnCount = 4;
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.Controls.Add(this.button5, 0, 0);
 			this.tableLayoutPanel2.Controls.Add(this.button1, 2, 0);
 			this.tableLayoutPanel2.Controls.Add(this.statusLabel, 1, 0);
+			this.tableLayoutPanel2.Controls.Add(this.button6, 3, 0);
 			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 419);
 			this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
@@ -179,6 +186,21 @@ namespace ScheduleCreation {
 			this.tableLayoutPanel2.Size = new System.Drawing.Size(800, 31);
 			this.tableLayoutPanel2.TabIndex = 1;
 			// 
+			// button5
+			// 
+			this.button5.AutoSize = true;
+			this.button5.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button5.BackColor = System.Drawing.Color.Transparent;
+			this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button5.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.button5.Location = new System.Drawing.Point(3, 3);
+			this.button5.Name = "button5";
+			this.button5.Size = new System.Drawing.Size(92, 25);
+			this.button5.TabIndex = 2;
+			this.button5.Text = "Открыть файл";
+			this.button5.UseVisualStyleBackColor = false;
+			this.button5.Click += new System.EventHandler(this.button5_Click);
+			// 
 			// button1
 			// 
 			this.button1.AutoSize = true;
@@ -186,12 +208,13 @@ namespace ScheduleCreation {
 			this.button1.BackColor = System.Drawing.Color.RoyalBlue;
 			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.button1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.button1.Location = new System.Drawing.Point(725, 3);
+			this.button1.Location = new System.Drawing.Point(607, 3);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(72, 25);
 			this.button1.TabIndex = 0;
 			this.button1.Text = "Сохранить";
 			this.button1.UseVisualStyleBackColor = false;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// statusLabel
 			// 
@@ -199,7 +222,7 @@ namespace ScheduleCreation {
 			this.statusLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.statusLabel.Location = new System.Drawing.Point(101, 0);
 			this.statusLabel.Name = "statusLabel";
-			this.statusLabel.Size = new System.Drawing.Size(618, 31);
+			this.statusLabel.Size = new System.Drawing.Size(500, 31);
 			this.statusLabel.TabIndex = 1;
 			this.statusLabel.Text = "status";
 			// 
@@ -262,24 +285,26 @@ namespace ScheduleCreation {
 			this.button4.UseVisualStyleBackColor = true;
 			this.button4.Click += new System.EventHandler(this.button4_Click);
 			// 
-			// button5
-			// 
-			this.button5.AutoSize = true;
-			this.button5.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.button5.BackColor = System.Drawing.Color.Transparent;
-			this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button5.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.button5.Location = new System.Drawing.Point(3, 3);
-			this.button5.Name = "button5";
-			this.button5.Size = new System.Drawing.Size(92, 25);
-			this.button5.TabIndex = 2;
-			this.button5.Text = "Открыть файл";
-			this.button5.UseVisualStyleBackColor = false;
-			this.button5.Click += new System.EventHandler(this.button5_Click);
-			// 
 			// openFileDialog1
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
+			// button6
+			// 
+			this.button6.AutoSize = true;
+			this.button6.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button6.BackColor = System.Drawing.Color.RoyalBlue;
+			this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.button6.Location = new System.Drawing.Point(685, 3);
+			this.button6.Name = "button6";
+			this.button6.Size = new System.Drawing.Size(112, 25);
+			this.button6.TabIndex = 3;
+			this.button6.Text = "Сохранить сжатое";
+			this.toolTip1.SetToolTip(this.button6, "Сохранение только необходимой информации (уроки, время и дни с 0 использований не" +
+        " будут сохранены)");
+			this.button6.UseVisualStyleBackColor = false;
+			this.button6.Click += new System.EventHandler(this.button6_Click);
 			// 
 			// Form1
 			// 
@@ -288,7 +313,7 @@ namespace ScheduleCreation {
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "Form1";
-			this.Text = "Form1";
+			this.Text = "расписание";
 			this.tableLayoutPanel3.ResumeLayout(false);
 			this.tableLayoutPanel3.PerformLayout();
 			this.tableLayoutPanel1.ResumeLayout(false);
@@ -320,6 +345,8 @@ namespace ScheduleCreation {
 		private System.Windows.Forms.Button button5;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+		private System.Windows.Forms.Button button6;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }
 

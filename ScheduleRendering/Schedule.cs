@@ -118,7 +118,7 @@ public class IntRange {
 }
 
 //(group << 1) | числитель/знаменатель
-public class Day {
+public class Day : ICloneable {
 	public int timeIndex;
 	public int[][] lessons;
 
@@ -135,7 +135,14 @@ public class Day {
 	    return lessons[(week.toInt() << 1) | group.toInt()];
 	}
 
-    public static Day emptyDay;
+	public object Clone() {
+		return new Day(
+			this.timeIndex, 
+			this.lessons.Select(it => (int[]) it.Clone()).ToArray()
+		);
+	}
+
+	public static Day emptyDay;
 
 	static Day() {
 		var lesson = new int[0];
@@ -238,6 +245,73 @@ static (int, int) countPos(string source, int pos) {
     }
 
     return (lineIndex, charIndex);
+}
+
+private static StringBuilder aps(this StringBuilder sb, string obj, string end = " ") {
+	return sb.Append(obj.Length).Append(",").Append(obj).Append(",").Append(end);
+}
+
+private static StringBuilder apc<T>(this StringBuilder sb, T obj, string end = " ") {
+	return sb.Append(obj).Append(",").Append(end);
+}
+
+public static string scheduleToString(Schedule sc) {
+	var sb = new StringBuilder();
+
+	sb.apc("2", "\n\n"); //version
+
+	sb.apc(sc.lessons.Count, "\n");
+	foreach(var l in sc.lessons) sb.Append("    ").aps(l.type)
+		.aps(l.loc).aps(l.name).aps(l.extra, "\n");
+	sb.Append('\n');
+
+	sb.Append(sc.times.Count).Append(",\n");
+	foreach(var time in sc.times) {
+		sb.Append("    ").apc(time.Length, "   ");
+		foreach(var t in time) sb.apc(t.first/60, "").apc(t.first%60)
+			.apc(t.last/60, "").apc(t.last%60, "  ");
+	}
+	sb.Append('\n');
+
+	sb.apc(sc.days.Count, "\n");
+	foreach(var day in sc.days) {
+		if(day.timeIndex < 0) throw new Exception(
+			"День номер " + sc.days.IndexOf(day) + ": не задано время занятий"
+		);
+		sb.Append("    ").apc(day.timeIndex, "\n");
+
+		void appendLessons(int[] lessons) { 
+			foreach(var lesson in lessons) sb.apc(lesson, "");
+		}
+
+		sb.Append("    ");
+		appendLessons(day.lessons[0]);
+		sb.Append(' ');
+		appendLessons(day.lessons[1]);
+		sb.Append("\n    ");
+		appendLessons(day.lessons[2]);
+		sb.Append(' ');
+		appendLessons(day.lessons[3]);
+		sb.Append("\n\n");
+	}
+	sb.Append('\n');
+	
+	foreach(var dayIndex in sc.daysInWeek) {
+		sb.apc(dayIndex);
+	}
+	sb.Append("\n\n");
+
+	sb.apc(sc.weeksDescription.day.ToString("00"), "")
+		.apc(sc.weeksDescription.month.ToString("00"), "")
+		.apc(sc.weeksDescription.year, "\n\n");
+
+	sb.apc(sc.weeksDescription.weeks.Length, "");
+	foreach(var week in sc.weeksDescription.weeks) {
+		sb.Append(week ? '1' : '0');
+	}
+	sb.Append(",\n");
+
+	return sb.ToString();
 }
 
 static StringView parseRawString(this StringView it) {

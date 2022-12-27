@@ -26,8 +26,9 @@ namespace ScheduleCreation {
 		private void InitializeComponent() {
 			this.timeTable = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.statusLabel = new System.Windows.Forms.Label();
 			this.selectB = new System.Windows.Forms.Button();
+			this.statusLabel = new System.Windows.Forms.Label();
+			this.button1 = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -36,7 +37,7 @@ namespace ScheduleCreation {
 			this.timeTable.AutoSize = true;
 			this.timeTable.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.timeTable.ColumnCount = 2;
-			this.tableLayoutPanel1.SetColumnSpan(this.timeTable, 2);
+			this.tableLayoutPanel1.SetColumnSpan(this.timeTable, 3);
 			this.timeTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.timeTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.timeTable.Dock = System.Windows.Forms.DockStyle.Top;
@@ -50,12 +51,14 @@ namespace ScheduleCreation {
 			// 
 			// tableLayoutPanel1
 			// 
-			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnCount = 3;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.Controls.Add(this.timeTable, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.selectB, 2, 1);
 			this.tableLayoutPanel1.Controls.Add(this.statusLabel, 0, 1);
-			this.tableLayoutPanel1.Controls.Add(this.selectB, 1, 1);
+			this.tableLayoutPanel1.Controls.Add(this.button1, 1, 1);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -64,15 +67,6 @@ namespace ScheduleCreation {
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(800, 450);
 			this.tableLayoutPanel1.TabIndex = 1;
-			// 
-			// statusLabel
-			// 
-			this.statusLabel.AutoSize = true;
-			this.statusLabel.Location = new System.Drawing.Point(3, 421);
-			this.statusLabel.Name = "statusLabel";
-			this.statusLabel.Size = new System.Drawing.Size(35, 13);
-			this.statusLabel.TabIndex = 1;
-			this.statusLabel.Text = "status";
 			// 
 			// selectB
 			// 
@@ -88,6 +82,29 @@ namespace ScheduleCreation {
 			this.selectB.UseVisualStyleBackColor = false;
 			this.selectB.Click += new System.EventHandler(this.selectB_Click);
 			// 
+			// statusLabel
+			// 
+			this.statusLabel.AutoSize = true;
+			this.statusLabel.Location = new System.Drawing.Point(3, 421);
+			this.statusLabel.Name = "statusLabel";
+			this.statusLabel.Size = new System.Drawing.Size(35, 13);
+			this.statusLabel.TabIndex = 1;
+			this.statusLabel.Text = "status";
+			// 
+			// button1
+			// 
+			this.button1.BackColor = System.Drawing.Color.Transparent;
+			this.button1.FlatAppearance.BorderSize = 0;
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.button1.Location = new System.Drawing.Point(641, 424);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(75, 23);
+			this.button1.TabIndex = 3;
+			this.button1.Text = "Сбросить";
+			this.button1.UseVisualStyleBackColor = false;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// TimeForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -95,7 +112,7 @@ namespace ScheduleCreation {
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "TimeForm";
-			this.Text = "TimeForm";
+			this.Text = "Время";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
@@ -106,7 +123,8 @@ namespace ScheduleCreation {
 
 		private System.Windows.Forms.TableLayoutPanel timeTable;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.Label statusLabel;
 		private System.Windows.Forms.Button selectB;
+		private System.Windows.Forms.Label statusLabel;
+		private System.Windows.Forms.Button button1;
 	}
 }

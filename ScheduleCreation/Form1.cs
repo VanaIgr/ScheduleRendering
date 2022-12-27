@@ -57,7 +57,7 @@ namespace ScheduleCreation {
 
 			{
 				var sb = new StringBuilder(schedule.weeksDescription.weeks.Length);
-				foreach(var it in schedule.weeksDescription.weeks) sb.Append(it ? '1' : '0');
+				foreach(var it in schedule.weeksDescription.weeks) sb.Append(it ? 'з' : 'ч');
 				weeksText.Text = sb.ToString();
 			}
 
@@ -142,7 +142,7 @@ namespace ScheduleCreation {
 		}
 
 		private void button3_Click(object sender, EventArgs e) {
-			new SelectLessonForm(context, 0).ShowDialog();
+			new LessonSelectForm(context, 0).ShowDialog();
 			updateScheduleContext();
 		}
 
@@ -164,6 +164,133 @@ namespace ScheduleCreation {
 				} catch(Exception ex) {
 					statusLabel.Text = ex.ToString();
 				}
+			}
+		}
+
+		private void button1_Click(object sender, EventArgs _) {
+			try {
+				var str = ScheduleExt.scheduleToString(context.schedule);
+
+				saveFileDialog1.Filter = "schedule file | *.scd";
+				if(saveFileDialog1.ShowDialog() == DialogResult.OK) {
+					System.IO.File.WriteAllText(saveFileDialog1.FileName, str);
+					statusLabel.Text = "Сохранено успешно";
+				}
+				else statusLabel.Text = "Сохранение отменено";
+			}
+			catch(Exception e) {
+				statusLabel.Text = e.ToString();
+			}
+		}
+
+		private void startDate_ValueChanged(object sender, EventArgs e) {
+			var date = startDate.Value;
+			var wd = context.schedule.weeksDescription;
+			wd.day = date.Day;
+			wd.month = date.Month;
+			wd.year = date.Year;
+			updateScheduleContext();
+		}
+
+		private void weeksText_KeyUp(object sender, KeyEventArgs e) {
+			if(e.KeyCode == Keys.Enter) try{
+				var str = weeksText.Text;
+				var weeks = new bool[str.Length];
+				for(int i = 0; i < str.Length; i++) {
+					var c = str[i];
+					if(c == 'ч') weeks[i] = true;
+					else if(c == 'з') weeks[i] = true;
+					else throw new Exception("Неправильный символ `" + c + "` в строке недель на позиции "
+						+ i + ". Можно использоваать только `ч` для числителя и `з` для знаменателя");
+				}
+				var wd = context.schedule.weeksDescription;
+				wd.weeks = weeks;
+				updateScheduleContext();
+				statusLabel.Text = "";
+			}
+			catch(Exception ex) {
+				statusLabel.Text = ex.ToString();
+			}
+		}
+
+		private void button6_Click(object sender, EventArgs _) {
+			try {
+				var sc = context.schedule;
+
+				var cDays = new List<ScheduleExt.Day>();
+				var cTimes = new List<IntRange[]>();
+				var cLessons = new List<Lesson>();
+				var cDaysInWeek = new int[sc.daysInWeek.Length];
+
+				for(var i = 0; i < sc.daysInWeek.Length; i++) {
+					var dayIndex = sc.daysInWeek[i];
+					if(dayIndex >= 0) {
+						var day = sc.days[dayIndex];
+						dayIndex  = cDays.IndexOf(day);
+						if(dayIndex < 0) {
+							dayIndex = cDays.Count;
+							cDays.Add((ScheduleExt.Day) day.Clone());
+						}
+					}
+					cDaysInWeek[i] = dayIndex;
+				}
+
+				for(var i = 0; i < cDays.Count; i++) {
+					var day = cDays[i];
+
+					for(int j = 0; j < day.lessons.Length; j++)
+					for(int k = 0; k < day.lessons[j].Length; k++) {
+						var lessonIndex = day.lessons[j][k];
+						if(lessonIndex > 0) {
+							var lesson = sc.lessons[lessonIndex - 1];
+							var cLessonIndex = cLessons.IndexOf(lesson);
+							if(cLessonIndex == -1) {
+								cLessonIndex = cLessons.Count;
+								cLessons.Add(lesson);
+							}
+							day.lessons[j][k] = cLessonIndex + 1;
+						}
+					}
+
+					if(day.timeIndex >= 0) {
+						var time = sc.times[day.timeIndex];
+						var cTimeIndex = cTimes.IndexOf(time);
+						if(cTimeIndex == -1) {
+							cTimeIndex = cTimes.Count;
+							cTimes.Add(time);
+						}
+						day.timeIndex = cTimeIndex;
+					}
+				}
+
+				/*var cDays0 = new Dictionary<int, ScheduleExt.Day>();
+				var cTimes0 = new Dictionary<int, IntRange[]>();
+				var cLessons0 = new Dictionary<int, Lesson>();
+
+				for(int i = 0; i < sc.days.Count; i++) if(context.daysUsage[i] > 0) cDays0.Add(i, sc.days[i]);
+				for(int i = 0; i < sc.lessons.Count; i++) if(context.lessonsUsage[i] > 0) cLessons0.Add(i, sc.lessons[i]);
+				for(int i = 0; i < sc.times.Count; i++) if(context.timesUsage[i] > 0) cTimes0.Add(i, sc.times[i]);
+				
+				foreach(var day in cDays0.Values) {
+					if()
+				}*/
+
+				var cSchedule = new Schedule(
+					sc.weeksDescription,
+					cDays, cTimes, cLessons, cDaysInWeek
+				);
+
+				var str = scheduleToString(cSchedule);
+
+				saveFileDialog1.Filter = "schedule file | *.scd";
+				if(saveFileDialog1.ShowDialog() == DialogResult.OK) {
+					System.IO.File.WriteAllText(saveFileDialog1.FileName, str);
+					statusLabel.Text = "Сохранено успешно";
+				}
+				else statusLabel.Text = "Сохранение отменено";
+			}
+			catch(Exception e) {
+				statusLabel.Text = e.ToString();
 			}
 		}
 	}

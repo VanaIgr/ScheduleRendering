@@ -118,7 +118,7 @@ namespace ScheduleCreation {
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "DayEditForm";
-			this.Text = "DayEditForm";
+			this.Text = "Зименение дня";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.tableLayoutPanel2.ResumeLayout(false);

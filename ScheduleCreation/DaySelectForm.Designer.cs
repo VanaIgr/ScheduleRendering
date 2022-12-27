@@ -28,9 +28,9 @@ namespace ScheduleCreation {
 			this.dayPreviewTable = new System.Windows.Forms.TableLayoutPanel();
 			this.daysTable = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-			this.addB = new System.Windows.Forms.Button();
 			this.deleteB = new System.Windows.Forms.Button();
 			this.selectB = new System.Windows.Forms.Button();
+			this.addB = new System.Windows.Forms.Button();
 			this.editB = new System.Windows.Forms.Button();
 			this.button1 = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -105,19 +105,6 @@ namespace ScheduleCreation {
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(819, 31);
 			this.tableLayoutPanel3.TabIndex = 2;
 			// 
-			// addB
-			// 
-			this.addB.AutoSize = true;
-			this.addB.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.addB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.addB.Location = new System.Drawing.Point(3, 3);
-			this.addB.Name = "addB";
-			this.addB.Size = new System.Drawing.Size(69, 25);
-			this.addB.TabIndex = 3;
-			this.addB.Text = "Добавить";
-			this.addB.UseVisualStyleBackColor = true;
-			this.addB.Click += new System.EventHandler(this.addB_Click);
-			// 
 			// deleteB
 			// 
 			this.deleteB.AutoSize = true;
@@ -145,6 +132,19 @@ namespace ScheduleCreation {
 			this.selectB.Text = "Выбрать";
 			this.selectB.UseVisualStyleBackColor = false;
 			this.selectB.Click += new System.EventHandler(this.selectB_Click);
+			// 
+			// addB
+			// 
+			this.addB.AutoSize = true;
+			this.addB.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.addB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.addB.Location = new System.Drawing.Point(3, 3);
+			this.addB.Name = "addB";
+			this.addB.Size = new System.Drawing.Size(69, 25);
+			this.addB.TabIndex = 3;
+			this.addB.Text = "Добавить";
+			this.addB.UseVisualStyleBackColor = true;
+			this.addB.Click += new System.EventHandler(this.addB_Click);
 			// 
 			// editB
 			// 
@@ -181,7 +181,7 @@ namespace ScheduleCreation {
 			this.ClientSize = new System.Drawing.Size(825, 536);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "DaySelectForm";
-			this.Text = "DaySelectForm";
+			this.Text = "Выбор дня";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.tableLayoutPanel3.ResumeLayout(false);

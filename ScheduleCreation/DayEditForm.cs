@@ -97,7 +97,7 @@ namespace ScheduleCreation {
 						l.TextAlign = ContentAlignment.MiddleCenter;
 						int j = i;
 						l.Click += (a, b) => {
-							var form = new SelectLessonForm(context, lessonIndex);
+							var form = new LessonSelectForm(context, lessonIndex);
 							if(form.ShowDialog() == DialogResult.OK) {
 								lessonsIndices[j] = form.SelectedLesson;
 								updateDisplay();

@@ -179,5 +179,9 @@ namespace ScheduleCreation {
 
 			return list.ToArray();
 		}
+
+		private void button1_Click(object sender, EventArgs e) {
+			selectedTime = -1;
+		}
 	}
 }

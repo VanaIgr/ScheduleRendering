@@ -93,11 +93,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleContext.cs" />
-    <Compile Include="SelectLessonForm.cs">
+    <Compile Include="LessonSelectForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SelectLessonForm.Designer.cs">
-      <DependentUpon>SelectLessonForm.cs</DependentUpon>
+    <Compile Include="LessonSelectForm.Designer.cs">
+      <DependentUpon>LessonSelectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TimeForm.cs">
       <SubType>Form</SubType>
@@ -129,8 +129,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="SelectLessonForm.resx">
-      <DependentUpon>SelectLessonForm.cs</DependentUpon>
+    <EmbeddedResource Include="LessonSelectForm.resx">
+      <DependentUpon>LessonSelectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TimeForm.resx">
       <DependentUpon>TimeForm.cs</DependentUpon>

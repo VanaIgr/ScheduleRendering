@@ -8,14 +8,14 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace ScheduleCreation {
-	public partial class SelectLessonForm : Form {
+	public partial class LessonSelectForm : Form {
 		ScheduleContext context;
 
 		int selectedLesson;
 
 		public int SelectedLesson{ get{ return selectedLesson; } }
 
-		public SelectLessonForm(ScheduleContext context, int selectedLesson) {
+		public LessonSelectForm(ScheduleContext context, int selectedLesson) {
 			this.context = context;
 			this.selectedLesson = selectedLesson;
 

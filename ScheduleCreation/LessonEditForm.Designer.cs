@@ -169,7 +169,7 @@ namespace ScheduleCreation {
 			this.ClientSize = new System.Drawing.Size(450, 163);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "LessonEditForm";
-			this.Text = "LessonEditForm";
+			this.Text = "Изменение урока";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);

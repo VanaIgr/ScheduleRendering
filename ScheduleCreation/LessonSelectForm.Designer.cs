@@ -1,6 +1,6 @@
 ﻿
 namespace ScheduleCreation {
-	partial class SelectLessonForm {
+	partial class LessonSelectForm {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -26,12 +26,12 @@ namespace ScheduleCreation {
 		private void InitializeComponent() {
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-			this.button1 = new System.Windows.Forms.Button();
 			this.addB = new System.Windows.Forms.Button();
 			this.deleteB = new System.Windows.Forms.Button();
-			this.changeB = new System.Windows.Forms.Button();
 			this.selectB = new System.Windows.Forms.Button();
 			this.selectedLessonIndexL = new System.Windows.Forms.Label();
+			this.changeB = new System.Windows.Forms.Button();
+			this.button1 = new System.Windows.Forms.Button();
 			this.lessonsTable = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
@@ -78,24 +78,6 @@ namespace ScheduleCreation {
 			this.tableLayoutPanel2.Size = new System.Drawing.Size(794, 31);
 			this.tableLayoutPanel2.TabIndex = 2;
 			// 
-			// button1
-			// 
-			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.button1.AutoSize = true;
-			this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.button1.BackColor = System.Drawing.Color.RoyalBlue;
-			this.button1.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.button1.Location = new System.Drawing.Point(634, 3);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(90, 25);
-			this.button1.TabIndex = 5;
-			this.button1.Text = "Выбрать окно";
-			this.button1.UseVisualStyleBackColor = false;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
-			// 
 			// addB
 			// 
 			this.addB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -132,24 +114,6 @@ namespace ScheduleCreation {
 			this.deleteB.UseVisualStyleBackColor = false;
 			this.deleteB.Click += new System.EventHandler(this.deleteB_Click);
 			// 
-			// changeB
-			// 
-			this.changeB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.changeB.AutoSize = true;
-			this.changeB.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.changeB.BackColor = System.Drawing.Color.Transparent;
-			this.changeB.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-			this.changeB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.changeB.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.changeB.Location = new System.Drawing.Point(415, 3);
-			this.changeB.Name = "changeB";
-			this.changeB.Size = new System.Drawing.Size(70, 25);
-			this.changeB.TabIndex = 2;
-			this.changeB.Text = "Изменить";
-			this.changeB.UseVisualStyleBackColor = false;
-			this.changeB.Click += new System.EventHandler(this.changeB_Click);
-			// 
 			// selectB
 			// 
 			this.selectB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -179,6 +143,42 @@ namespace ScheduleCreation {
 			this.selectedLessonIndexL.TabIndex = 6;
 			this.selectedLessonIndexL.Text = "selectedIndex";
 			// 
+			// changeB
+			// 
+			this.changeB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.changeB.AutoSize = true;
+			this.changeB.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.changeB.BackColor = System.Drawing.Color.Transparent;
+			this.changeB.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+			this.changeB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.changeB.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.changeB.Location = new System.Drawing.Point(415, 3);
+			this.changeB.Name = "changeB";
+			this.changeB.Size = new System.Drawing.Size(70, 25);
+			this.changeB.TabIndex = 2;
+			this.changeB.Text = "Изменить";
+			this.changeB.UseVisualStyleBackColor = false;
+			this.changeB.Click += new System.EventHandler(this.changeB_Click);
+			// 
+			// button1
+			// 
+			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.button1.AutoSize = true;
+			this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.button1.BackColor = System.Drawing.Color.RoyalBlue;
+			this.button1.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.button1.Location = new System.Drawing.Point(634, 3);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(90, 25);
+			this.button1.TabIndex = 5;
+			this.button1.Text = "Выбрать окно";
+			this.button1.UseVisualStyleBackColor = false;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// lessonsTable
 			// 
 			this.lessonsTable.AutoScroll = true;
@@ -204,7 +204,7 @@ namespace ScheduleCreation {
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "SelectLessonForm";
-			this.Text = "SelectLessonForm";
+			this.Text = "Выбор урока";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.tableLayoutPanel2.ResumeLayout(false);
