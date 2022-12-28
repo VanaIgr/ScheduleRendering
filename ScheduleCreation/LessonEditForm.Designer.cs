@@ -125,7 +125,7 @@ namespace ScheduleCreation {
 			this.nameTB.Location = new System.Drawing.Point(119, 54);
 			this.nameTB.Name = "nameTB";
 			this.nameTB.Size = new System.Drawing.Size(328, 25);
-			this.nameTB.TabIndex = 1;
+			this.nameTB.TabIndex = 0;
 			this.nameTB.TextChanged += new System.EventHandler(this.nameTB_TextChanged);
 			// 
 			// typeTB
@@ -180,7 +180,7 @@ namespace ScheduleCreation {
 			this.autofillTB.Location = new System.Drawing.Point(119, 3);
 			this.autofillTB.Name = "autofillTB";
 			this.autofillTB.Size = new System.Drawing.Size(328, 25);
-			this.autofillTB.TabIndex = 0;
+			this.autofillTB.TabIndex = 1;
 			// 
 			// statusLabel
 			// 

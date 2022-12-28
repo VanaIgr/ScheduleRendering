@@ -12,7 +12,8 @@ namespace ScheduleCreation {
 	public partial class LessonSelectForm : Form {
 		ScheduleContext context;
 
-		List<int> duplicates = new List<int>();
+		HashSet<int> duplicates = new HashSet<int>();
+		HashSet<int> possibleDuplicates = new HashSet<int>();
 
 		int selectedLesson;
 
@@ -71,6 +72,49 @@ namespace ScheduleCreation {
 			}
 		}
 
+		private struct Distance {
+			public int offset, maxInRow, distance;
+
+			public Distance(int offset, int maxInRow, int distance) {
+				this.offset = offset;
+				this.maxInRow = maxInRow;
+				this.distance = distance;
+			}
+		}
+
+		private float clamp(float a, float c1, float c2) {
+			if(c1 > c2) return clamp(a, c2, c1);
+			return Math.Min(Math.Max(a, c1), c2);
+		}
+
+		private Color overlay(Color top, Color bot) {
+			//https://stackoverflow.com/a/48343059/18704284
+
+			var a0 = top.A / 255.0f;
+			var r0 = top.R / 255.0f;
+			var g0 = top.G / 255.0f;
+			var b0 = top.B / 255.0f;
+
+			var a1 = bot.A / 255.0f;
+			var r1 = bot.R / 255.0f;
+			var g1 = bot.G / 255.0f;
+			var b1 = bot.B / 255.0f;
+
+			var x = 1 - a0;
+
+			var a = x * a1 + a0;
+			var r = (x*a1*r1 + a0*r0) / a;
+			var g = (x*a1*g1 + a0*g0) / a;
+			var b = (x*a1*b1 + a0*b0) / a;
+
+			return Color.FromArgb(
+				(int) clamp(a * 255.0f, 0, 255), 
+				(int) clamp(r * 255.0f, 0, 255),
+				(int) clamp(g * 255.0f, 0, 255), 
+				(int) clamp(b * 255.0f, 0, 255)
+			);
+		}
+
 		private void update() {
 			var schedule = context.schedule;
 			var lessons = context.schedule.lessons;
@@ -83,16 +127,57 @@ namespace ScheduleCreation {
 
 			lessonsTable.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
 
+			string prepDupString(string src) {
+				src = src.Trim();
+
+				var sb = new StringBuilder();
+				for(int i = 0; i < src.Length; i++) {
+					var c = src[i];
+					if(char.IsWhiteSpace(c));
+					else if(c == '\r' || c == '\n');
+					else sb.Append(c);
+				}
+
+				return sb.ToString();
+			}
+
 			duplicates.Clear();
+			possibleDuplicates.Clear();
 			var set = new Dictionary<string, int>();
 			for(int i = 0; i < lessons.Count; i++) {
 				var lesson = context.schedule.lessons[i];
-				var str = lesson.name.Trim() + lesson.type.Trim() + lesson.loc.Trim() + lesson.extra.Trim();
-				if(set.ContainsKey(str)) {
-					duplicates.Add(set[str]);
+				var str = prepDupString(lesson.name) + prepDupString(lesson.type)
+					+ prepDupString(lesson.loc) + prepDupString(lesson.extra);
+
+				int dupIndex = 0;
+				if(set.TryGetValue(str, out dupIndex)) {
+					duplicates.Add(dupIndex);
 					duplicates.Add(i);
 				}
-				else set.Add(str, i);
+				else if(str.Length >= 4) {
+					foreach(var pair in set) {
+						var str2 = pair.Key;
+						if(str2.Length < 4) continue;
+
+						bool testStr(string src, string pattern) {
+							var co = (int) Math.Floor(pattern.Length * 0.15f);
+							pattern = pattern.Substring2(co, pattern.Length - co);
+							return src.Contains(pattern);
+						}
+
+						bool contains = false;
+						if(str.Length < str2.Length) contains = testStr(str2, str);
+						else if(str.Length > str2.Length) contains = testStr(str, str2);
+						else contains = str == str2;
+
+						if(contains) {
+							possibleDuplicates.Add(pair.Value);
+							possibleDuplicates.Add(i);
+						}
+					}
+				}
+
+				set[str] = i;
 			}
 
 			Control selectedControl = null;
@@ -112,12 +197,22 @@ namespace ScheduleCreation {
 					update();
 				};
 
+				var posDup = possibleDuplicates.Contains(i);
 				var duplicate = duplicates.Contains(i);
 				var selected = i == selectedLesson - 1;
 
-				if(selected && duplicate) l.BackColor = Color.FromArgb(30, 255/2, 10, 5);
-				else if(duplicate) l.BackColor = Color.FromArgb(40, 255, 20, 10);
-				else if(selected)l.BackColor = Color.FromArgb(20, 0, 0, 0);
+				Color baseColor = Color.FromArgb(255, 255, 255, 255);
+				Color selColor = Color.FromArgb(40, 0, 0, 0);
+				Color dupColor = Color.FromArgb(40, 255, 20, 10);
+				Color posDupColor = Color.FromArgb(40, 255, 220, 40);
+
+				Color col = baseColor;
+
+				if(selected) col = overlay(selColor, col);
+				if(posDup) col = overlay(posDupColor, col);
+				if(duplicate) col = overlay(dupColor, col);
+
+				l.BackColor = col;
 
 				lessonsTable.Controls.Add(l, 1, i);
 
@@ -161,8 +256,7 @@ namespace ScheduleCreation {
 				var lesson = parseStringToLesson(patchLessonString(Clipboard.GetText()));
 				context.schedule.lessons.Add(lesson);
 				context.lessonsUsage.Add(0);
-				selectedLesson = context.schedule.lessons.Count-1 + 1;		
-				update();
+				selectedLesson = context.schedule.lessons.Count-1 + 1;						
 			}
 			catch(Exception ex) {
 				MessageBox.Show(
@@ -170,6 +264,7 @@ namespace ScheduleCreation {
 Технология разработки и защиты баз данных лк 229-2 Куприянов А.А.
 Ошибка: " + ex.ToString());
 			}
+			update();
 		}
 	}
 }
