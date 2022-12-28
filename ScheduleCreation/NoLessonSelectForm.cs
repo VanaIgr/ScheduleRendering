@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace ScheduleCreation {
-	public partial class NoLessonSelectForm : Form {
+	public partial class NoLessonSelectForm : PositionRememberForm<NoLessonSelectForm> {
 		
 		public int SelectedNumber{ get; private set; }
 

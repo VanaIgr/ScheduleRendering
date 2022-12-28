@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using static ScheduleExt;
 
 namespace ScheduleCreation {
-	public partial class DaySelectForm : Form {
+	public partial class DaySelectForm : PositionRememberForm<DaySelectForm> {
 		ScheduleContext context;
 
 		int selectedDay;
@@ -90,7 +90,7 @@ namespace ScheduleCreation {
 
 		private void editB_Click(object sender, EventArgs e) {
 			var form = new DayEditForm(context, context.schedule.days[selectedDay]);
-			form.ShowDialog();
+			form.ShowDialog2();
 			update();
 		}
 

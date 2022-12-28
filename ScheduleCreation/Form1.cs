@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using static ScheduleExt;
 
 namespace ScheduleCreation {
-	public partial class Form1 : Form {
+	public partial class Form1 : PositionRememberForm<Form1> {
 
 		ScheduleContext context;
 
@@ -110,7 +110,7 @@ namespace ScheduleCreation {
 				var dayIndex = schedule.daysInWeek[j];
 				n.Click += (a, b) => {
 					var form = new DaySelectForm(context, dayIndex);
-					if(form.ShowDialog() == DialogResult.OK) {
+					if(form.ShowDialog2() == DialogResult.OK) {
 						schedule.daysInWeek[j] = form.SelectedDay;
 						updateScheduleContext();
 					}
@@ -137,17 +137,17 @@ namespace ScheduleCreation {
 		}
 
 		private void button2_Click(object sender, EventArgs e) {
-			new DaySelectForm(context, -1).ShowDialog();
+			new DaySelectForm(context, -1).ShowDialog2();
 			updateScheduleContext();
 		}
 
 		private void button3_Click(object sender, EventArgs e) {
-			new LessonSelectForm(context, 0).ShowDialog();
+			new LessonSelectForm(context, 0).ShowDialog2();
 			updateScheduleContext();
 		}
 
 		private void button4_Click(object sender, EventArgs e) {
-			new TimeForm(context, 0).ShowDialog();
+			new TimeForm(context, 0).ShowDialog2();
 			updateScheduleContext();
 		}
 

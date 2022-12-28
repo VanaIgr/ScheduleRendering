@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using static ScheduleExt;
 
 namespace ScheduleCreation {
-	public partial class LessonSelectForm : Form {
+	public partial class LessonSelectForm : PositionRememberForm<LessonSelectForm> {
 		ScheduleContext context;
 
 		HashSet<int> duplicates = new HashSet<int>();
@@ -36,7 +36,7 @@ namespace ScheduleCreation {
 			if(selectedLesson <= 0) return;
 
 			var form = new LessonEditForm(context, context.schedule.lessons[selectedLesson - 1]);
-			form.ShowDialog();
+			form.ShowDialog2();
 
 			update();
 		}
@@ -62,7 +62,7 @@ namespace ScheduleCreation {
 		private void addB_Click(object sender, EventArgs e) {
 			var lesson = new ScheduleExt.Lesson("", "", "", "");
 			var form = new LessonEditForm(context, lesson);
-			if(form.ShowDialog() == DialogResult.OK) {
+			if(form.ShowDialog2() == DialogResult.OK) {
 				context.schedule.lessons.Add(lesson);
 				context.lessonsUsage.Add(0);
 
@@ -228,7 +228,7 @@ namespace ScheduleCreation {
 
 		private void button1_Click(object sender, EventArgs e) {
 			var form = new NoLessonSelectForm();
-			if(form.ShowDialog() == DialogResult.OK) {
+			if(form.ShowDialog2() == DialogResult.OK) {
 				selectedLesson = form.SelectedNumber;
 				DialogResult = DialogResult.OK;
 			}
@@ -243,7 +243,7 @@ namespace ScheduleCreation {
 			var oldSelected = selectedLesson;
 			selectedLesson = context.schedule.lessons.Count-1 + 1;
 			update();
-			if(new LessonEditForm(context, lesson).ShowDialog() != DialogResult.OK) {
+			if(new LessonEditForm(context, lesson).ShowDialog2() != DialogResult.OK) {
 				context.schedule.lessons.RemoveAt(selectedLesson - 1);
 				context.lessonsUsage.RemoveAt(selectedLesson - 1);
 				selectedLesson = oldSelected;

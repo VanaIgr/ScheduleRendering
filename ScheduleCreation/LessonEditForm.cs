@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace ScheduleCreation {
-	public partial class LessonEditForm : Form {
+	public partial class LessonEditForm : PositionRememberForm<LessonEditForm> {
 		private ScheduleContext context;
 		private ScheduleExt.Lesson lesson;
 

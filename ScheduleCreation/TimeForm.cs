@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using static ScheduleExt;
 
 namespace ScheduleCreation {
-	public partial class TimeForm : Form {
+	public partial class TimeForm : PositionRememberForm<TimeForm> {
 		private ScheduleContext context;
 
 		private int selectedTime;

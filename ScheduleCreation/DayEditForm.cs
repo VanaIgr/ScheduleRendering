@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace ScheduleCreation {
-	public partial class DayEditForm : Form {
+	public partial class DayEditForm : PositionRememberForm<DayEditForm> {
 
 		public ScheduleExt.Day day;
 
@@ -24,7 +24,7 @@ namespace ScheduleCreation {
 
 		private void label1_Click(object sender, EventArgs e) {
 			var form = new TimeForm(context, day.timeIndex);
-			if(form.ShowDialog() == DialogResult.OK) {
+			if(form.ShowDialog2() == DialogResult.OK) {
 				day.timeIndex = form.SelectedTime;
 			}
 			if(day.timeIndex != -1) { 
@@ -98,7 +98,7 @@ namespace ScheduleCreation {
 						int j = i;
 						l.Click += (a, b) => {
 							var form = new LessonSelectForm(context, lessonIndex);
-							if(form.ShowDialog() == DialogResult.OK) {
+							if(form.ShowDialog2() == DialogResult.OK) {
 								lessonsIndices[j] = form.SelectedLesson;
 								updateDisplay();
 							}
