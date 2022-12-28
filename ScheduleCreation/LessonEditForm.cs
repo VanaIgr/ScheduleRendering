@@ -27,11 +27,30 @@ namespace ScheduleCreation {
 			autofillTB.UpdateAutofil += (a, b) => updateAutofill();
 		}
 
+		private StringBuilder sb = new StringBuilder();
+
+		private string normalizeStr(string str) {
+			sb.Clear();
+			var spaceBefore = false;
+			for(int i = 0; i < str.Length; i++) {
+				var c = str[i];
+				if(char.IsWhiteSpace(c)) {
+					spaceBefore = true;
+				}
+				else {
+					if(spaceBefore && sb.Length > 0) sb.Append(" ");
+					spaceBefore = false;
+					sb.Append(c);
+				}
+			}
+			return sb.ToString();
+		}
+
 		private void saveB_Click(object sender, EventArgs e) {
-			lesson.name = nameTB.Text;
-			lesson.type = typeTB.Text;
-			lesson.loc = placeTB.Text;
-			lesson.extra = extraTB.Text;
+			lesson.name  = normalizeStr(nameTB.Text );
+			lesson.type  = normalizeStr(typeTB.Text );
+			lesson.loc   = normalizeStr(placeTB.Text);
+			lesson.extra = normalizeStr(extraTB.Text);
 			DialogResult = DialogResult.OK;
 		}
 
@@ -42,10 +61,10 @@ namespace ScheduleCreation {
 			try {
 				var newLesson = ScheduleExt.parseStringToLesson(autofillTB.Text);
 
-				nameTB.Text = newLesson.name.Trim();
-				typeTB.Text = newLesson.type.Trim();
-				placeTB.Text = newLesson.loc.Trim();
-				extraTB.Text = newLesson.extra.Trim();
+				nameTB.Text = normalizeStr(newLesson.name);
+				typeTB.Text = normalizeStr(newLesson.type);
+				placeTB.Text = normalizeStr(newLesson.loc);
+				extraTB.Text = normalizeStr(newLesson.extra);
 			}
 			catch(Exception e) {
 				statusLabel.Text = e.ToString();
